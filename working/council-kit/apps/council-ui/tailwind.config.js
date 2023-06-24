@@ -8,6 +8,7 @@ module.exports = {
     require("@tailwindcss/typography"),
     require("@tailwindcss/line-clamp"),
     require("daisyui"),
+    require('@tailwindcss/forms'),
   ],
   daisyui: {
     prefix: "daisy-",

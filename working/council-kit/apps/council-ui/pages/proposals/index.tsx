@@ -2,6 +2,7 @@ import { getBlockDate } from "@council/sdk";
 import { useQuery, UseQueryResult } from "@tanstack/react-query";
 import assertNever from "assert-never";
 import { parseEther } from "ethers/lib/utils";
+import Link from "next/link";
 import { ReactElement } from "react";
 import { councilConfigs } from "src/config/council.config";
 import { getProposalStatus } from "src/proposals/getProposalStatus";
@@ -23,6 +24,9 @@ export default function ProposalsPage(): ReactElement {
   return (
     <Page>
       <h1 className="text-5xl font-bold">Proposals</h1>
+      <div>
+        <Link href="/proposals/create" className="daisy-link daisy-link-primary">create proposal</Link>
+      </div>
 
       {(() => {
         switch (status) {
@@ -92,14 +96,14 @@ function useProposalsPageData(
           const expirationBlock = await proposal.getExpirationBlock();
           const votingEnds = expirationBlock
             ? await getBlockDate(expirationBlock, context.provider, {
-                estimateFutureDates: true,
-              })
+              estimateFutureDates: true,
+            })
             : null;
           const lastCall = await proposal.getLastCallBlock();
           const lastCallDate = lastCall
             ? await getBlockDate(lastCall, context.provider, {
-                estimateFutureDates: true,
-              })
+              estimateFutureDates: true,
+            })
             : null;
           const currentQuorum = await proposal.getCurrentQuorum();
           const vote = account ? await proposal.getVote(account) : null;
