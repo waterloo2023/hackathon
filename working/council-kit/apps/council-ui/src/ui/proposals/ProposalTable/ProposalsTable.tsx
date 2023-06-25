@@ -44,6 +44,16 @@ export function ProposalsTable({ rowData }: ProposalsTableProps): ReactElement {
   const [votes, setVotes] = useState({});
   const [convictions, setConvictions] = useState({});
   const [isEditable, setIsEditable] = useState({});
+  
+  const remaingCredits = (votes) => {
+    let sum = 0;
+    for (const key in votes) {
+      if (votes.hasOwnProperty(key)) {
+        sum += votes[key];
+      }
+    }
+    return (100 - sum) || 0; 
+  };
 
 
   const calculateConviction = (votes, timeElapsed, halfLife) => {
@@ -63,6 +73,7 @@ export function ProposalsTable({ rowData }: ProposalsTableProps): ReactElement {
     const halfLife = 1800; // Half-life period of 30 minutes in seconds
     updatedConviction[index] = calculateConviction(updatedVotes[index], timeElapsed, halfLife);
     setConvictions(updatedConviction);
+    remaingCredits(updatedVotes);
   };
 
   const handleKeyDown = (e, index) => {
@@ -74,8 +85,15 @@ export function ProposalsTable({ rowData }: ProposalsTableProps): ReactElement {
     }
   }
 
+  
+
   return (
     <>
+  
+    <div>
+      REMAINING CREDITS {remaingCredits(votes)}
+    </div>
+
       <div className="hidden md:block">
         <SortableGridTable
           headingRowClassName="grid-cols-[3fr_1fr_1fr_1fr_1fr]"
@@ -115,16 +133,22 @@ export function ProposalsTable({ rowData }: ProposalsTableProps): ReactElement {
                   )}
                 </span>,
 
-                votingEnds ? formatTimeLeft(votingEnds) : <em>unknown</em>,
+                votingEnds ? formatTimeLeft(votingEnds) : <em>3 months</em>,
 
 
                 <StatusBadge key={`${id}-status`} status={status} />,
-                
+
                   ballot ? (
                   <FormattedBinaryBallot ballot={ballot} />
+
                 ) : account ? (
-                  <div><input type="number" min = {0} max = {100} className="w-20" value = {votes[index] || 0 } onChange={(e) => handleVoteChange(e, index)} onKeyDown={(e) => handleKeyDown(e, index)} readOnly = {isEditable[index]==false}
-                  className= {isEditable[index] ? '' : 'bg-gray-200'}/> </div>
+                  <div>
+                    
+                    <input type="number" min = {0} max = {100} className="w-20" value = {votes[index] || 0 } onChange={(e) => handleVoteChange(e, index)} onKeyDown={(e) => handleKeyDown(e, index)} readOnly = {isEditable[index]==false}
+                  className= {isEditable[index] ? '' : 'bg-gray-200'}/>    
+                  </div>
+
+
                   // <em>Not voted</em>
                 ) : (
                   <em>Not connected</em>
