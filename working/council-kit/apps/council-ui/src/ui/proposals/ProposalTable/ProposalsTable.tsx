@@ -12,7 +12,7 @@ import {
 } from "src/ui/base/tables/SortableGridTable";
 import { Tooltip } from "src/ui/base/Tooltip/Tooltip";
 import { tooltipByStatus } from "src/ui/proposals/tooltips";
-import FormattedBallot from "src/ui/voting/FormattedBallot";
+import {FormattedBallot, FormattedBinaryBallot} from "src/ui/voting/FormattedBallot";
 import { useAccount } from "wagmi";
 
 export interface ProposalRowData {
@@ -41,12 +41,45 @@ export function ProposalsTable({ rowData }: ProposalsTableProps): ReactElement {
     [sortOptions, rowData],
   );
 
+  const [votes, setVotes] = useState({});
+  const [convictions, setConvictions] = useState({});
+  const [isEditable, setIsEditable] = useState({});
+
+
+  const calculateConviction = (votes, timeElapsed, halfLife) => {
+    const decayFactor = Math.pow(0.5, timeElapsed / halfLife);
+    const conviction = votes * decayFactor;
+    return conviction;
+  };
+  
+  const handleVoteChange = (e, index) => {
+    const updatedVotes = {...votes};
+    const updatedConviction = {...convictions};
+    const clampedValue = Math.max(0, Math.min(100, parseInt(e.target.value)));
+    updatedVotes[index] = clampedValue;
+    setVotes(updatedVotes);
+    // TODO: Remove Hardcode for timeElapsed
+    const timeElapsed = 3600; // 1 hour in seconds
+    const halfLife = 1800; // Half-life period of 30 minutes in seconds
+    updatedConviction[index] = calculateConviction(updatedVotes[index], timeElapsed, halfLife);
+    setConvictions(updatedConviction);
+  };
+
+  const handleKeyDown = (e, index) => {
+    if (e.key === "Enter") {
+      e.preventDefault();
+      // const clampedValue = Math.max(0, Math.min(100, parseInt(e.target.value)));
+      // e.target.value = clampedValue.toString();
+      setIsEditable({...isEditable, [index]: false});
+    }
+  }
+
   return (
     <>
       <div className="hidden md:block">
         <SortableGridTable
-          headingRowClassName="grid-cols-[4fr_1fr_1fr_1fr_56px]"
-          bodyRowClassName="group grid-cols-[4fr_1fr_1fr_1fr_56px] items-center"
+          headingRowClassName="grid-cols-[3fr_1fr_1fr_1fr_1fr]"
+          bodyRowClassName="group grid-cols-[3fr_1fr_1fr_1fr_1fr] items-center"
           onSort={setSortOptions}
           cols={[
             "Name",
@@ -59,7 +92,7 @@ export function ProposalsTable({ rowData }: ProposalsTableProps): ReactElement {
               sortKey: "status",
             },
             "Your Ballot",
-            "", // extra column for the chevron
+            "Conviction",
           ]}
           rows={sortedData.map(
             ({
@@ -69,7 +102,7 @@ export function ProposalsTable({ rowData }: ProposalsTableProps): ReactElement {
               votingEnds,
               sentenceSummary,
               title,
-            }) => ({
+            }, index) => ({
               cells: [
                 <span key={`${id}-name`}>
                   {title ?? `${votingContractName} Proposal ${id}`}
@@ -84,20 +117,21 @@ export function ProposalsTable({ rowData }: ProposalsTableProps): ReactElement {
 
                 votingEnds ? formatTimeLeft(votingEnds) : <em>unknown</em>,
 
-                <StatusBadge key={`${id}-status`} status={status} />,
 
-                ballot ? (
-                  <FormattedBallot ballot={ballot} />
+                <StatusBadge key={`${id}-status`} status={status} />,
+                
+                  ballot ? (
+                  <FormattedBinaryBallot ballot={ballot} />
                 ) : account ? (
-                  <em>Not voted</em>
+                  <div><input type="number" min = {0} max = {100} className="w-20" value = {votes[index] || 0 } onChange={(e) => handleVoteChange(e, index)} onKeyDown={(e) => handleKeyDown(e, index)} readOnly = {isEditable[index]==false}
+                  className= {isEditable[index] ? '' : 'bg-gray-200'}/> </div>
+                  // <em>Not voted</em>
                 ) : (
                   <em>Not connected</em>
                 ),
 
-                <ChevronRightIcon
-                  key={`${id}-chevron`}
-                  className="w-6 h-6 transition-all stroke-current opacity-40 group-hover:opacity-100"
-                />,
+               <em> {convictions[index]}</em> 
+                ,
               ],
             }),
           )}

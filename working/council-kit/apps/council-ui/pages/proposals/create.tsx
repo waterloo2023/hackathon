@@ -71,14 +71,14 @@ const useFormManager = () => {
 
             // debugger
 
-            await votingContract.createProposal(
-                signer as Signer,
-                [values[ids.addressVaultContract]],
-                [values[ids.addressTarget]],
-                [values[ids.calldata]],
-                lastCall,
-                values[ids.ballot] as Ballot,
-            )
+            // await votingContract.createProposal(
+            //     signer as Signer,
+            //     [values[ids.addressVaultContract]],
+            //     [values[ids.addressTarget]],
+            //     [values[ids.calldata]],
+            //     lastCall,
+            //     values[ids.ballot] as Ballot,
+            // )
 
             proposals.save(values[ids.id], values[ids.proposal])
 
