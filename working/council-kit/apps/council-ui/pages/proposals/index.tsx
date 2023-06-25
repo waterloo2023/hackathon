@@ -25,7 +25,7 @@ export default function ProposalsPage(): ReactElement {
     <Page>
       <h1 className="text-5xl font-bold">Proposals</h1>
       <div>
-        <Link href="/proposals/create" className="daisy-link daisy-link-primary">create proposal</Link>
+        <Link href="/proposals/create" className="daisy-link daisy-link-primary">Create Proposal</Link>
       </div>
 
       {(() => {

@@ -59,10 +59,12 @@ const useFormManager = () => {
 
             const currentBlock = blockNumber!;
 
-            const DAY_IN_SECONDS = 86400;
-            const BLOCK_TIME = 12;
-            const DAY_IN_BLOCKS = DAY_IN_SECONDS / BLOCK_TIME;
-            const lastCall = currentBlock + DAY_IN_BLOCKS * 90;
+            // const DAY_IN_SECONDS = 86400;
+            // const BLOCK_TIME = 12;
+            // const DAY_IN_BLOCKS = DAY_IN_SECONDS / BLOCK_TIME;
+            const lastCall = currentBlock //+ DAY_IN_BLOCKS * 90;
+
+            // debugger
 
             await votingContract.createProposal(
                 signer as Signer,
@@ -136,7 +138,6 @@ const handleProof = async (result: ISuccessResult) => {
 					{({ open }) => <button onClick={open}>Verify with World ID</button>}
 				</IDKitWidget>)}
 
-            <div>{JSON.stringify(values)}</div>
             {showForm && (
             <form
                 noValidate
