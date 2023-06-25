@@ -1,8 +1,16 @@
 const PROPOSAL = 'PROPOSAL'
 
-export const save = (id: string, proposal: string) => {
+export const save = (id: string, title: string) => {
     const proposals = JSON.parse(localStorage.getItem(PROPOSAL) ?? '{}')
-    localStorage.setItem(PROPOSAL, JSON.stringify({ ...proposals, ...{ [id]: proposal }, }))
+
+    const proposal = {
+        id,
+        title,
+        status: 'IN PROGRESS',
+        created: new Date(),
+    }
+
+    localStorage.setItem(PROPOSAL, JSON.stringify({ ...proposals, ...({ [id]: proposal, }), }))
 }
 
 export const getById = (id: string) => {
@@ -22,10 +30,6 @@ export const getList = () => {
     const proposals = JSON.parse(localStorage.getItem(PROPOSAL) ?? '')
     return Object.keys(proposals)
         .map(
-            id => ({
-                id,
-                title: proposals[id],
-                status: 'IN PROGRESS',
-            })
+            id => (proposals[id])
         )
 }
