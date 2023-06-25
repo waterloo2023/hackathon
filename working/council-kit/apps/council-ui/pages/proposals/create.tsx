@@ -7,6 +7,9 @@ import React from "react";
 import { Page } from "src/ui/base/Page";
 import { useCouncil } from "src/ui/council/useCouncil";
 import { useBlockNumber, useSigner } from 'wagmi'
+import { useRouter } from 'next/router';
+
+import * as proposals from './proposals'
 
 import { CredentialType, IDKitWidget } from "@worldcoin/idkit";
 import type { ISuccessResult } from "@worldcoin/idkit";
@@ -36,6 +39,8 @@ const initialValues = Object.freeze({
 
 
 const useFormManager = () => {
+    const router = useRouter();
+
     const { context, } = useCouncil();
 
     const { data: signer } = useSigner();
@@ -74,7 +79,10 @@ const useFormManager = () => {
                 lastCall,
                 values[ids.ballot] as Ballot,
             )
-            console.log(values)
+
+            proposals.save(values[ids.id], values[ids.proposal])
+
+            router.push('/proposals')
         }, [context, signer, blockNumber, values]
     )
 
@@ -145,19 +153,20 @@ const handleProof = async (result: ISuccessResult) => {
                 onSubmit={handleSubmit}
             >
                 <div className='flex flex-col'>
-                    <label htmlFor={ids.calldata}>Enter proposal</label>
-                    <TextField
-                        {...getFieldProps(ids.proposal)}
-                        invalid={false}
-                    />
-                </div>
-                <div className='flex flex-col'>
                     <label htmlFor={ids.calldata}>Enter id</label>
                     <TextField
                         {...getFieldProps(ids.id)}
                         invalid={false}
                     />
                 </div>
+                <div className='flex flex-col'>
+                    <label htmlFor={ids.calldata}>Enter proposal</label>
+                    <TextField
+                        {...getFieldProps(ids.proposal)}
+                        invalid={false}
+                    />
+                </div>
+
                 <div>
                     <footer>
                         <div className='flex justify-end mb-4'>

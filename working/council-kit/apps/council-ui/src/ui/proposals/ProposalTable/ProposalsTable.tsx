@@ -16,16 +16,13 @@ import FormattedBallot from "src/ui/voting/FormattedBallot";
 import { useAccount } from "wagmi";
 
 export interface ProposalRowData {
+  id: string;
+  title: string;
   status: ProposalStatus;
-  ballot: Ballot | null;
   created: Date | null;
-  currentQuorum: string;
-  id: number;
-  votingContractAddress: string;
-  votingContractName: string;
-  votingEnds: Date | null;
+  ballot?: string;
+  votingEnds?: Date | null;
   sentenceSummary?: string;
-  title?: string;
 }
 
 interface ProposalsTableProps {
@@ -69,13 +66,10 @@ export function ProposalsTable({ rowData }: ProposalsTableProps): ReactElement {
               status,
               ballot,
               id,
-              votingContractAddress,
-              votingContractName,
               votingEnds,
               sentenceSummary,
               title,
             }) => ({
-              href: makeProposalURL(votingContractAddress, id),
               cells: [
                 <span key={`${id}-name`}>
                   {title ?? `${votingContractName} Proposal ${id}`}
@@ -116,9 +110,6 @@ export function ProposalsTable({ rowData }: ProposalsTableProps): ReactElement {
               status,
               ballot,
               id,
-              votingContractAddress,
-              votingContractName,
-              votingEnds,
               sentenceSummary,
               title,
             },
@@ -126,12 +117,12 @@ export function ProposalsTable({ rowData }: ProposalsTableProps): ReactElement {
           ) => (
             <Link
               key={i}
-              href={makeProposalURL(votingContractAddress, id)}
+              href={''/** todo: use url to vote on proposal */}
               className="daisy-card bg-base-200 hover:shadow-xl transition-shadow"
             >
               <div className="daisy-card-body justify-between">
                 <h3 className="text-2xl daisy-card-title">
-                  {title ?? `${votingContractName} Proposal ${id}`}
+                  {`${id}: ${title}`}
                 </h3>
                 {sentenceSummary && (
                   <p className="opacity-60">
