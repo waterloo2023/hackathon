@@ -16,14 +16,14 @@ import FormattedBallot from "src/ui/voting/FormattedBallot";
 import { useAccount } from "wagmi";
 
 export interface ProposalRowData {
-  status: ProposalStatus;
-  ballot: Ballot | null;
-  created: Date | null;
-  currentQuorum: string;
-  id: number;
-  votingContractAddress: string;
-  votingContractName: string;
-  votingEnds: Date | null;
+  status?: ProposalStatus;
+  ballot?: Ballot | null;
+  created?: Date | null;
+  currentQuorum?: string;
+  id?: number;
+  votingContractAddress?: string;
+  votingContractName?: string;
+  votingEnds?: Date | null;
   sentenceSummary?: string;
   title?: string;
 }

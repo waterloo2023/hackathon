@@ -16,10 +16,13 @@ import {
 } from "src/ui/proposals/ProposalTable/ProposalsTable";
 import { ProposalsTableSkeleton } from "src/ui/proposals/ProposalTable/ProposalsTableSkeleton";
 import { useAccount } from "wagmi";
+import * as proposals from './proposals'
 
 export default function ProposalsPage(): ReactElement {
   const { address } = useAccount();
-  const { data, error, status } = useProposalsPageData(address);
+  // const { data, error, status } = useProposalsPageData(address);
+
+  const data = proposals.getList()
 
   return (
     <Page>
@@ -28,7 +31,9 @@ export default function ProposalsPage(): ReactElement {
         <Link href="/proposals/create" className="daisy-link daisy-link-primary">create proposal</Link>
       </div>
 
-      {(() => {
+      <ProposalsTable rowData={data} />
+
+      {/* {(() => {
         switch (status) {
           case "loading":
             return (
@@ -55,7 +60,7 @@ export default function ProposalsPage(): ReactElement {
           default:
             assertNever(status);
         }
-      })()}
+      })()} */}
 
       <div className="flex flex-wrap gap-4 md:flex-nowrap">
         <ExternalInfoCard
