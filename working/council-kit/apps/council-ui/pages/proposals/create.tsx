@@ -52,10 +52,12 @@ const useFormManager = () => {
 
             const currentBlock = blockNumber!;
 
-            const DAY_IN_SECONDS = 86400;
-            const BLOCK_TIME = 12;
-            const DAY_IN_BLOCKS = DAY_IN_SECONDS / BLOCK_TIME;
-            const lastCall = currentBlock + DAY_IN_BLOCKS * 90;
+            // const DAY_IN_SECONDS = 86400;
+            // const BLOCK_TIME = 12;
+            // const DAY_IN_BLOCKS = DAY_IN_SECONDS / BLOCK_TIME;
+            const lastCall = currentBlock //+ DAY_IN_BLOCKS * 90;
+
+            // debugger
 
             await votingContract.createProposal(
                 signer as Signer,
@@ -91,34 +93,33 @@ export default function CreateProposalPage() {
         <Page>
             <h1 className="text-5xl font-bold">Create Proposal</h1>
 
-            <div>{JSON.stringify(values)}</div>
             <form
                 noValidate
                 className="flex flex-col space-y-3 z-20"
                 onSubmit={handleSubmit}
             >
-                <div className='flex flex-col'>
+                <div className='hidden flex flex-col'>
                     <label htmlFor={ids.addressVotingContract}>Enter voting contract address</label>
                     <TextField
                         {...getFieldProps(ids.addressVotingContract)}
                         invalid={false}
                     />
                 </div>
-                <div className='flex flex-col'>
+                <div className='hidden flex flex-col'>
                     <label htmlFor={ids.addressVaultContract}>Enter voting vault addresses</label>
                     <TextField
                         {...getFieldProps(ids.addressVaultContract)}
                         invalid={false}
                     />
                 </div>
-                <div className='flex flex-col'>
+                <div className='hidden flex flex-col'>
                     <label htmlFor={ids.addressTarget}>Enter target addresses</label>
                     <TextField
                         {...getFieldProps(ids.addressTarget)}
                         invalid={false}
                     />
                 </div>
-                <div className='flex flex-col'>
+                <div className='hidden flex flex-col'>
                     <label htmlFor={ids.calldata}>Enter call data for each target</label>
                     <TextField
                         {...getFieldProps(ids.calldata)}
