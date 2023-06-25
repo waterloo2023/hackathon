@@ -8,6 +8,9 @@ import { Page } from "src/ui/base/Page";
 import { useCouncil } from "src/ui/council/useCouncil";
 import { useBlockNumber, useSigner } from 'wagmi'
 
+import { CredentialType, IDKitWidget } from "@worldcoin/idkit";
+import type { ISuccessResult } from "@worldcoin/idkit";
+
 const ids = Object.freeze({
     addressVotingContract: 'addressVotingContract',
     addressVaultContract: 'addressVaultContract',
@@ -23,10 +26,14 @@ const initialValues = Object.freeze({
     addressVaultContract: '0x712516e61c8b383df4a63cfe83d7701bce54b03e',
     addressTarget: '0x0000000000000000000000000000000000000000',
     calldata: '0x0000000000000000000000000000000000000000',
-    ballot: 'maybe',
+    ballot: 'yes',
     proposal: '',
     id: '',
 })
+
+
+
+
 
 const useFormManager = () => {
     const { context, } = useCouncil();
@@ -84,47 +91,58 @@ const useFormManager = () => {
 
 export default function CreateProposalPage() {
     const { getFieldProps, handleSubmit, values, } = useFormManager()
+
+    const [startSubmission, setStartSubmission] = React.useState(false)
+    const [showForm, setShowForm] = React.useState(false);
+
     const isSubmitting = false
     const isSubmitSuccessful = false
+
+    const onSuccess = (result: ISuccessResult) => {
+        setShowForm(true);
+		console.log("Verified")// This is where you should perform frontend actions once a user has been verified, such as redirecting to a new page
+
+
+	};
+
+const handleProof = async (result: ISuccessResult) => {
+		const reqBody = {
+			merkle_root: result.merkle_root,
+			nullifier_hash: result.nullifier_hash,
+			proof: result.proof,
+			credential_type: result.credential_type,
+			action: "create_proposal",
+			signal: "",
+		};
+		fetch("/api/verify", {
+			method: "POST",
+			headers: {
+				"Content-Type": "application/json",
+			},
+			body: JSON.stringify(reqBody),
+		}).then(async (res: Response) => {
+			if (res.status == 200) {
+				console.log("Successfully verified credential.")
+			} else {
+				throw new Error("Error: " + (await res.json()).code) ?? "Unknown error.";
+			}
+		});
+	};
 
     return (
         <Page>
             <h1 className="text-5xl font-bold">Create Proposal</h1>
+             {!showForm && (<IDKitWidget action={"create_proposal"!} onSuccess={onSuccess} handleVerify={handleProof} app_id={"app_staging_10c3337987d9053b408f3bc93ab007fe"!} credential_types={[CredentialType.Orb, CredentialType.Phone]}>
+					{({ open }) => <button onClick={open}>Verify with World ID</button>}
+				</IDKitWidget>)}
 
             <div>{JSON.stringify(values)}</div>
+            {showForm && (
             <form
                 noValidate
                 className="flex flex-col space-y-3 z-20"
                 onSubmit={handleSubmit}
             >
-                <div className='flex flex-col'>
-                    <label htmlFor={ids.addressVotingContract}>Enter voting contract address</label>
-                    <TextField
-                        {...getFieldProps(ids.addressVotingContract)}
-                        invalid={false}
-                    />
-                </div>
-                <div className='flex flex-col'>
-                    <label htmlFor={ids.addressVaultContract}>Enter voting vault addresses</label>
-                    <TextField
-                        {...getFieldProps(ids.addressVaultContract)}
-                        invalid={false}
-                    />
-                </div>
-                <div className='flex flex-col'>
-                    <label htmlFor={ids.addressTarget}>Enter target addresses</label>
-                    <TextField
-                        {...getFieldProps(ids.addressTarget)}
-                        invalid={false}
-                    />
-                </div>
-                <div className='flex flex-col'>
-                    <label htmlFor={ids.calldata}>Enter call data for each target</label>
-                    <TextField
-                        {...getFieldProps(ids.calldata)}
-                        invalid={false}
-                    />
-                </div>
                 <div className='flex flex-col'>
                     <label htmlFor={ids.calldata}>Enter proposal</label>
                     <TextField
@@ -142,7 +160,7 @@ export default function CreateProposalPage() {
                 <div>
                     <footer>
                         <div className='flex justify-end mb-4'>
-                            <button
+                            {<button
                                 type='submit'
                                 className={
                                     'daisy-btn daisy-btn-primary '.concat(
@@ -152,11 +170,15 @@ export default function CreateProposalPage() {
                                     )
                                 }
                                 disabled={isSubmitting || isSubmitSuccessful}
-                            >{isSubmitSuccessful ? 'Sent' : 'Submit'}</button>
+                            >{isSubmitSuccessful ? 'Sent' : 'Submit'}</button>}
                         </div>
                     </footer>
                 </div>
             </form>
+            )}
+            {
+                // startSubmission
+            }
         </Page>
     )
 }
