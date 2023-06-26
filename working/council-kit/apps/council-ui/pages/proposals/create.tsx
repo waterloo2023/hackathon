@@ -140,7 +140,9 @@ const handleProof = async (result: ISuccessResult) => {
 	};
 
     return (
+        
         <Page>
+            
             <h1 className="text-5xl font-bold">Create Proposal</h1>
              {!showForm && (<IDKitWidget action={"create_proposal"!} onSuccess={onSuccess} handleVerify={handleProof} app_id={"app_staging_10c3337987d9053b408f3bc93ab007fe"!} credential_types={[CredentialType.Orb, CredentialType.Phone]}>
 					{({ open }) => <button onClick={open}>Verify with World ID</button>}
@@ -185,6 +187,7 @@ const handleProof = async (result: ISuccessResult) => {
                     </footer>
                 </div>
             </form>
+            
             )}
             {
                 // startSubmission
